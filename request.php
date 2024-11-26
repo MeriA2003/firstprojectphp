@@ -8,14 +8,17 @@
     $email = $_POST["email"];
     $phone = $_POST['phone'];
     $address = $_POST["address"];
-    if (empty($name) || empty($email) || empty($phone) || empty($address)) {
+    $password = $_POST["password"];
+    if (empty($name) || empty($email) || empty($phone) || empty($address)||empty($password)) {
         echo "All fiels are required!";
+        exit;
     } 
     $servername = "localhost";
     $username = "root";
-    $password = "";
+    //$password = "";
+    $password_db = "";
     $database = "user_registrations";
-    $conn = mysqli_connect($servername, $username, $password);
+    $conn = mysqli_connect($servername, $username, $password_db);
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }
@@ -44,12 +47,13 @@
         //header('Location: index1.php');
         exit;
     }
-    $insert = "INSERT INTO aboutuser (name, email, phone, address) VALUES ('$name', '$email',  '$phone', '$address')";
+    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+    $insert = "INSERT INTO aboutuser (name, email,password, phone, address) VALUES ('$name', '$email', '$hashed_password', '$phone', '$address')";
     if (mysqli_query($conn, $insert)) {
         $_SESSION['perfect'] = "Congratulatins you registered .";
     } else {
         $_SESSION['error'] = "Error: Could not execute $insert. " . mysqli_error($conn);
     }
-    header('Location: index1.php');
+    header('Location: loginhtml.php');
     mysqli_close($conn);
 ?>
